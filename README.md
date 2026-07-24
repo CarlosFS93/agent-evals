@@ -292,12 +292,17 @@ still gets an answer from a person.
 `.github/workflows/evals.yml` runs on every pull request and on pushes to `main`.
 It has two jobs that answer different questions.
 
-`deterministic` runs the unit tests, the offline suite with the replay agent
-(`--agent mock --no-judge`), and the guardrail demo. No secret, no model call, no
-cost, so it runs on every pull request, including from forks. It checks that the
-harness itself still works: that the checks fire, the engine aggregates, and the
-gate decides correctly. Because the replay agent ignores the system prompt, this
-job says nothing about a change to the prompt.
+`deterministic` runs the unit tests and the offline suite with the replay agent
+(`--agent mock --no-judge`). No secret, no model call, no cost, so it runs on
+every pull request, including from forks. It checks that the harness itself still
+works: that the checks fire, the engine aggregates, and the gate decides
+correctly. Because the replay agent ignores the system prompt, this job says
+nothing about a change to the prompt.
+
+The inline guardrail is not run here. It is a request-path component built for
+low latency on live output, so a pre-merge batch check is the wrong place for it;
+its logic is covered by the unit tests, and `scripts/demo_guardrail.py` runs it
+on demand from a terminal.
 
 `live` runs the offline suite against the real agent and the judge (`--agent
 claude --judge`). It needs the `ANTHROPIC_API_KEY` repository secret, and is

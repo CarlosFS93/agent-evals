@@ -25,9 +25,6 @@ jobs:
       - name: Offline suite, clean replay traces (expects a green gate)
         run: python scripts/run_evals.py --agent mock --no-judge --quiet
 
-      - name: Inline guardrail demo
-        run: python scripts/demo_guardrail.py
-
       - name: Upload reports
         if: always()
         uses: actions/upload-artifact@v4
