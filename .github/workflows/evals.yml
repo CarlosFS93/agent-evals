@@ -1,0 +1,83 @@
+name: evals
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  # Runs on every pull request, including from forks. No secrets, no model
+  # calls, no cost. This job is the one that must always be green.
+  deterministic:
+    name: Unit tests and offline suite (no API key)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Unit tests for the deterministic checks
+        run: python -m unittest discover -s tests -v
+
+      - name: Offline suite, clean replay traces (expects a green gate)
+        run: python scripts/run_evals.py --agent mock --no-judge --quiet
+
+      - name: Inline guardrail demo
+        run: python scripts/demo_guardrail.py
+
+      - name: Upload reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: eval-reports-mock
+          path: reports/
+          if-no-files-found: ignore
+
+  # Runs the real agent against the real models. Needs a repository secret, so
+  # it is skipped when the secret is not available (forks, or a clone without
+  # credentials configured) rather than failing the build for the wrong reason.
+  live:
+    name: Offline suite with the real agent
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Check for credentials
+        id: creds
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          if [ -n "$ANTHROPIC_API_KEY" ]; then
+            echo "available=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "available=false" >> "$GITHUB_OUTPUT"
+            echo "ANTHROPIC_API_KEY is not set. Skipping the live suite."
+          fi
+
+      - name: Install dependencies
+        if: steps.creds.outputs.available == 'true'
+        run: pip install -r requirements.txt
+
+      - name: Run the suite against the real agent
+        if: steps.creds.outputs.available == 'true'
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          AGENT_MODEL: ${{ vars.AGENT_MODEL || 'claude-sonnet-5' }}
+          JUDGE_MODEL: ${{ vars.JUDGE_MODEL || 'claude-sonnet-5' }}
+          AGENT_PROMPT_VARIANT: ${{ vars.AGENT_PROMPT_VARIANT || 'good' }}
+        run: python scripts/run_evals.py --agent claude --judge --repetitions 3
+
+      - name: Upload reports
+        if: always() && steps.creds.outputs.available == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: eval-reports-live
+          path: reports/
+          if-no-files-found: ignore

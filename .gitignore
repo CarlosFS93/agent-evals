@@ -1,0 +1,26 @@
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.eggs/
+
+.venv/
+venv/
+env/
+
+.env
+
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+.DS_Store
+.idea/
+.vscode/
+
+# Generated reports. The directory itself is kept.
+reports/*
+!reports/.gitkeep

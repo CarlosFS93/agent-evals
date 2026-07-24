@@ -1,0 +1,5 @@
+# Runtime dependencies. Both are only needed for the paths that call a model or
+# read a .env file. The mock agent, the deterministic checks, the guardrail, and
+# the unit tests all run on the standard library alone.
+anthropic>=0.40
+python-dotenv>=1.0
