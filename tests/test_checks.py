@@ -3,7 +3,7 @@
 These tests are the reason the deterministic layer can be trusted as the build
 gate: the checks themselves are pinned by examples, including the cases where a
 check must NOT fire (a correct answer that re-expresses units, an identifier
-minted during the run, a vacuously satisfied ordering rule).
+minted during the run, a vacuously satisfied ordering rule)
 """
 
 from __future__ import annotations
