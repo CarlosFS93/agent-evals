@@ -33,7 +33,6 @@ def run_suite(
     suite = SuiteResult(
         agent_name=getattr(agent, "name", agent.__class__.__name__),
         model=getattr(agent, "model", "unknown"),
-        prompt_variant=getattr(agent, "prompt_variant", "n/a"),
         repetitions=repetitions,
         judge_enabled=judge is not None,
         task_titles={t.id: t.title for t in tasks},
@@ -76,15 +75,6 @@ def build_arg_parser() -> argparse.ArgumentParser:
         "--model",
         default=None,
         help="Model id for the claude agent. Defaults to AGENT_MODEL.",
-    )
-    parser.add_argument(
-        "--prompt-variant",
-        choices=["good", "weakened"],
-        default=None,
-        help=(
-            "System prompt variant for the claude agent. Defaults to "
-            "AGENT_PROMPT_VARIANT."
-        ),
     )
     judge_group = parser.add_mutually_exclusive_group()
     judge_group.add_argument(
@@ -136,9 +126,7 @@ def build_arg_parser() -> argparse.ArgumentParser:
 def main(argv: Optional[Sequence[str]] = None) -> int:
     args = build_arg_parser().parse_args(argv)
 
-    agent = build_agent(
-        args.agent, model=args.model, prompt_variant=args.prompt_variant
-    )
+    agent = build_agent(args.agent, model=args.model)
 
     if args.repetitions is not None:
         repetitions = args.repetitions

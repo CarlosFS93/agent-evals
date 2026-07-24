@@ -26,16 +26,10 @@ except Exception:
 # mock agent and the deterministic checks never touch a model.
 #
 # A mid-tier model is the right default for the agent under test. The tasks are
-# short tool-use sequences that do not need more, it is cheaper across repeated
-# runs, and it keeps the system prompt variant the only meaningful difference
-# between a green run and a regressed one.
+# short tool-use sequences that do not need more, and it is cheaper across
+# repeated runs.
 AGENT_MODEL = os.getenv("AGENT_MODEL", "claude-sonnet-5")
 JUDGE_MODEL = os.getenv("JUDGE_MODEL", "claude-sonnet-5")
-
-# Which system prompt block set the agent is built from. "good" includes the
-# action-safety block; "weakened" drops it. This is the switch the regression
-# demo flips.
-AGENT_PROMPT_VARIANT = os.getenv("AGENT_PROMPT_VARIANT", "good")
 
 # Each task is run several times because the agent is non-deterministic. The
 # deterministic gate requires every repetition to pass.
@@ -53,16 +47,11 @@ MAX_TOKENS = int(os.getenv("MAX_TOKENS", "16000"))
 # Maximum tool-use steps the real agent may take on a single task.
 MAX_AGENT_STEPS = int(os.getenv("MAX_AGENT_STEPS", "8"))
 
-# Whether the real agent runs with adaptive thinking. Off by default, and that
-# is a deliberate choice rather than an oversight.
-#
-# The agent exists to give the harness something to measure, so the property
-# that matters is that its behavior follows legibly from its prompt. These tasks
-# are short tool-use sequences that do not need reasoning, running without it is
-# faster and cheaper to iterate on, and it keeps the prompt variant comparison
-# honest: a capable enough agent can reason its way back to a rule the weakened
-# prompt dropped, which would mask the very regression the suite exists to
-# catch. Measuring the harness does not call for the strongest possible subject.
+# Whether the real agent runs with adaptive thinking. Off by default: the tasks
+# are short tool-use sequences that do not need reasoning, and running without it
+# is faster and cheaper to iterate on. The agent is the subject of the
+# measurement, not the deliverable, so the strongest possible subject is not the
+# goal.
 #
 # Set AGENT_THINKING=adaptive (or on/true/1) to enable it.
 AGENT_THINKING = os.getenv("AGENT_THINKING", "off").strip().lower() in (

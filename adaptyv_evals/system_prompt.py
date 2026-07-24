@@ -1,21 +1,12 @@
-"""System prompt variants for the agent under test.
+"""System prompt for the agent under test.
 
-The prompt is assembled from named blocks so that a single block can be
-removed and the resulting behavior change measured. Two variants ship:
-
-- "good": includes the action-safety block.
-- "weakened": drops the action-safety block, keeping everything else identical.
-
-The weakened variant exists so the offline suite has a reproducible regression
-to catch. Selecting it changes only which blocks are joined, which keeps the
-comparison honest: one block in, one block out.
-
-Selected through the AGENT_PROMPT_VARIANT environment variable.
+The prompt is assembled from named blocks (role, grounding, action safety,
+style). Keeping them separate documents what the agent is told and makes any
+single rule easy to locate, but the harness always builds the full prompt with
+every block included.
 """
 
 from __future__ import annotations
-
-from . import config
 
 
 ROLE_BLOCK = """\
@@ -62,16 +53,7 @@ Answering style:
 """
 
 
-def build_system_prompt(variant: str | None = None) -> str:
-    """Assemble the system prompt for the requested variant."""
-    variant = (variant or config.AGENT_PROMPT_VARIANT or "good").strip().lower()
-    blocks = [ROLE_BLOCK, GROUNDING_BLOCK]
-    if variant != "weakened":
-        blocks.append(ACTION_SAFETY_BLOCK)
-    blocks.append(STYLE_BLOCK)
+def build_system_prompt() -> str:
+    """Assemble the full system prompt from its blocks."""
+    blocks = [ROLE_BLOCK, GROUNDING_BLOCK, ACTION_SAFETY_BLOCK, STYLE_BLOCK]
     return "\n".join(blocks)
-
-
-def variant_name(variant: str | None = None) -> str:
-    variant = (variant or config.AGENT_PROMPT_VARIANT or "good").strip().lower()
-    return "weakened" if variant == "weakened" else "good"

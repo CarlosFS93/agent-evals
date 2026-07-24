@@ -49,21 +49,19 @@ class ClaudeAgent:
     def __init__(
         self,
         model: Optional[str] = None,
-        prompt_variant: Optional[str] = None,
         max_steps: Optional[int] = None,
         max_tokens: Optional[int] = None,
         thinking: Optional[bool] = None,
     ) -> None:
         self.model = model or config.AGENT_MODEL
-        self.prompt_variant = system_prompt_module.variant_name(prompt_variant)
-        self.system_prompt = system_prompt_module.build_system_prompt(prompt_variant)
+        self.system_prompt = system_prompt_module.build_system_prompt()
         self.max_steps = max_steps or config.MAX_AGENT_STEPS
         self.max_tokens = max_tokens or config.MAX_TOKENS
         self.thinking = config.AGENT_THINKING if thinking is None else thinking
 
     @property
     def name(self) -> str:
-        return f"claude[{self.model}, prompt={self.prompt_variant}]"
+        return f"claude[{self.model}]"
 
     def run(self, task: Task) -> Trace:
         import anthropic  # lazy: only the real agent needs the SDK
@@ -73,7 +71,7 @@ class ClaudeAgent:
         trace = Trace(
             task_id=task.id,
             model=self.model,
-            metadata={"agent": "claude", "prompt_variant": self.prompt_variant},
+            metadata={"agent": "claude"},
         )
 
         messages: list[dict[str, Any]] = [
@@ -415,10 +413,9 @@ AGENT_CHOICES = ("claude", "mock", "mock-regressed")
 def build_agent(
     kind: str,
     model: Optional[str] = None,
-    prompt_variant: Optional[str] = None,
 ):
     if kind == "claude":
-        return ClaudeAgent(model=model, prompt_variant=prompt_variant)
+        return ClaudeAgent(model=model)
     if kind == "mock":
         return ReplayAgent("good")
     if kind == "mock-regressed":

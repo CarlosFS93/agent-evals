@@ -65,7 +65,6 @@ class TaskSummary:
 class SuiteResult:
     agent_name: str
     model: str
-    prompt_variant: str
     repetitions: int
     judge_enabled: bool
     results: list[EvalResult] = field(default_factory=list)
@@ -126,7 +125,6 @@ class SuiteResult:
         return {
             "agent": self.agent_name,
             "model": self.model,
-            "prompt_variant": self.prompt_variant,
             "repetitions": self.repetitions,
             "judge_enabled": self.judge_enabled,
             "started_at": self.started_at,
@@ -164,7 +162,6 @@ def render_markdown(suite: SuiteResult) -> str:
     lines.append(f"- Run at: {suite.started_at}")
     lines.append(f"- Agent: {suite.agent_name}")
     lines.append(f"- Model: {suite.model}")
-    lines.append(f"- Prompt variant: {suite.prompt_variant}")
     lines.append(f"- Repetitions per task: {suite.repetitions}")
     lines.append(
         f"- Rubric judge: {'enabled' if suite.judge_enabled else 'disabled (--no-judge)'}"

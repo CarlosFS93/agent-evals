@@ -10,7 +10,7 @@ jobs:
   # Runs on every pull request, including from forks. No secrets, no model
   # calls, no cost. This job is the one that must always be green.
   deterministic:
-    name: Unit tests and offline suite (no API key)
+    name: Unit tests + offline suite (replay agent, no API key)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -37,7 +37,7 @@ jobs:
   # it is skipped when the secret is not available (forks, or a clone without
   # credentials configured) rather than failing the build for the wrong reason.
   live:
-    name: Offline suite with the real agent
+    name: Offline suite (real agent + judge)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -68,7 +68,6 @@ jobs:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           AGENT_MODEL: ${{ vars.AGENT_MODEL || 'claude-sonnet-5' }}
           JUDGE_MODEL: ${{ vars.JUDGE_MODEL || 'claude-sonnet-5' }}
-          AGENT_PROMPT_VARIANT: ${{ vars.AGENT_PROMPT_VARIANT || 'good' }}
         run: python scripts/run_evals.py --agent claude --judge --repetitions 3
 
       - name: Upload reports
