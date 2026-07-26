@@ -30,6 +30,8 @@ class TaskSummary:
     failure_details: list[str] = field(default_factory=list)
     informational_failures: list[str] = field(default_factory=list)
     rubric_scores: list[float] = field(default_factory=list)
+    # Per-criterion aggregate across judged repetitions: (index, text, passed, judged).
+    rubric_criteria: list[tuple[int, str, int, int]] = field(default_factory=list)
 
     @property
     def gate_passed(self) -> bool:
@@ -58,6 +60,10 @@ class TaskSummary:
             "failure_details": self.failure_details,
             "informational_failures": self.informational_failures,
             "rubric_mean": self.rubric_mean,
+            "rubric_criteria": [
+                {"criterion": text, "passed": passed, "judged": judged}
+                for _index, text, passed, judged in self.rubric_criteria
+            ],
         }
 
 
@@ -92,6 +98,9 @@ class SuiteResult:
                 repetitions=len(group),
                 gate_passes=sum(1 for r in group if r.gate_passed),
             )
+            # index -> [text, passed_count, judged_count], to aggregate the
+            # judge's per-criterion verdict across the repetitions of this task.
+            crit_agg: dict[int, list[Any]] = {}
             for result in group:
                 for check in result.failed_gating:
                     if check.name not in summary.failed_check_names:
@@ -107,6 +116,15 @@ class SuiteResult:
                         summary.informational_failures.append(line)
                 if result.rubric.score is not None:
                     summary.rubric_scores.append(result.rubric.score)
+                if result.rubric.judged:
+                    for crit in result.rubric.criteria:
+                        entry = crit_agg.setdefault(crit.index, [crit.criterion, 0, 0])
+                        entry[1] += 1 if crit.score == 1 else 0
+                        entry[2] += 1
+            summary.rubric_criteria = [
+                (index, text, passed, judged)
+                for index, (text, passed, judged) in sorted(crit_agg.items())
+            ]
             out.append(summary)
         return out
 
@@ -245,11 +263,22 @@ def render_markdown(suite: SuiteResult) -> str:
     if suite.judge_enabled:
         lines.append("## Rubric detail")
         lines.append("")
+        lines.append(
+            "Mean per task. Where the mean is below 1.0, the per-criterion "
+            "breakdown is shown as `[passed / judged repetitions]`, so it is clear "
+            "which criterion the judge marked down and whether it was consistent "
+            "across runs."
+        )
+        lines.append("")
         for summary in summaries:
             lines.append(
                 f"- `{summary.task_id}`: mean {_fmt_rubric(summary.rubric_mean)} "
                 f"over {len(summary.rubric_scores)} judged run(s)"
             )
+            mean = summary.rubric_mean
+            if mean is not None and mean < 1.0 and summary.rubric_criteria:
+                for _index, text, passed, judged in summary.rubric_criteria:
+                    lines.append(f"    - [{passed}/{judged}] {text}")
         lines.append("")
 
     lines.append("## Reproducing a failure")
