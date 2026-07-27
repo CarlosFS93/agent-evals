@@ -261,25 +261,29 @@ def render_markdown(suite: SuiteResult) -> str:
             lines.append("")
 
     if suite.judge_enabled:
+        marked_down = [
+            s
+            for s in summaries
+            if s.rubric_mean is not None and s.rubric_mean < 1.0
+        ]
         lines.append("## Rubric detail")
         lines.append("")
-        lines.append(
-            "Mean per task. Where the mean is below 1.0, the per-criterion "
-            "breakdown is shown as `[passed / judged repetitions]`, so it is clear "
-            "which criterion the judge marked down and whether it was consistent "
-            "across runs."
-        )
-        lines.append("")
-        for summary in summaries:
+        if not marked_down:
+            lines.append("The judge passed every criterion on every judged run.")
+            lines.append("")
+        else:
             lines.append(
-                f"- `{summary.task_id}`: mean {_fmt_rubric(summary.rubric_mean)} "
-                f"over {len(summary.rubric_scores)} judged run(s)"
+                "Per-task means are in the table above. Listed here are only the "
+                "criteria the judge marked down, as `[passed / judged runs]`. A "
+                "criterion that passed every run is not shown."
             )
-            mean = summary.rubric_mean
-            if mean is not None and mean < 1.0 and summary.rubric_criteria:
+            lines.append("")
+            for summary in marked_down:
+                lines.append(f"### `{summary.task_id}`")
                 for _index, text, passed, judged in summary.rubric_criteria:
-                    lines.append(f"    - [{passed}/{judged}] {text}")
-        lines.append("")
+                    if passed < judged:
+                        lines.append(f"- [{passed}/{judged}] {text}")
+                lines.append("")
 
     lines.append("## Reproducing a failure")
     lines.append("")
