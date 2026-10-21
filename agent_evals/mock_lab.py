@@ -1,8 +1,8 @@
-"""In-process stand-in for the Foundry API backend.
+"""In-process stand-in for the lab API backend.
 
-What this simulates: the public Foundry experiment lifecycle (search targets,
+What this simulates: the public experiment lifecycle (search targets,
 estimate cost, create a draft, submit it, poll status, fetch results) as
-documented for the public API around foundry-api-public.adaptyvbio.com/api/v1.
+documented for a typical public cloud-lab API.
 
 What was assumed: request and response shapes are mirrored from the documented
 fields. Pricing is a flat price per sequence multiplied by sequence count and
@@ -10,7 +10,7 @@ replicate count. Submission is instantaneous and moves an experiment to
 "submitted" with results_status "none", because no lab work happens here.
 
 What the production version would be: every method below would be an HTTP
-request to the real Foundry API (or a call through the public MCP server), with
+request to the real lab API (or a call through the public MCP server), with
 authentication, rate limits, retries, and pagination. Here they return
 deterministic fixture data with known ground truth so that evaluation results
 are reproducible and require no credentials.
@@ -28,8 +28,8 @@ from typing import Any, Optional
 from . import fixtures
 
 
-class MockFoundry:
-    """Deterministic simulation of the Foundry backend."""
+class MockLab:
+    """Deterministic simulation of the lab backend."""
 
     def __init__(self) -> None:
         # Drafts created during a run live only in memory. They are keyed by

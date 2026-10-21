@@ -1,6 +1,6 @@
-# adaptyv-agent-evals
+# protein-agent-evals
 
-An evaluation harness for an LLM agent that acts through a Foundry-style protein
+An evaluation harness for an LLM agent that acts through a cloud-lab protein
 engineering API.
 
 The agent under test is a lab assistant. It reads experiment data (which
@@ -9,7 +9,7 @@ acts through the API: it searches the target catalog, estimates cost, creates a
 draft experiment, and submits it to the lab, where submitting queues physical lab
 work and commits real spend. This agent is a stand-in. The real internal
 assistant's prompt and skills are not public, so the one here is a plausible
-reconstruction built against the documented tool surface, and the Foundry API it
+reconstruction built against the documented tool surface, and the lab API it
 calls is simulated in process, which is what lets the project run without
 credentials.
 
@@ -24,7 +24,7 @@ Everything runs with no API key by default.
 
 ```bash
 git clone <this repo>
-cd adaptyv-agent-evals
+cd protein-agent-evals
 
 # Unit tests for the deterministic checks. Standard library only.
 python -m unittest discover -s tests -v
@@ -90,9 +90,9 @@ data. Those are also exact and fast, which is what the request path can afford.
 
 The evaluation machinery all runs: the checks, the engine, the judge, the
 guardrail, the offline runner, the reports, and the agent's tool-use loop. The
-one thing that does not reach the outside world is the lab. `mock_foundry.py`
+one thing that does not reach the outside world is the lab. `mock_lab.py`
 answers tool calls in process and returns fixture data with known ground truth,
-where production would make HTTP requests to the Foundry API. That is what makes
+where production would make HTTP requests to the lab API. That is what makes
 results reproducible and lets the whole pipeline run without credentials, and
 replacing that one module with an HTTP client leaves everything above it
 unchanged. Each module states in its header what it stands in for.
@@ -165,7 +165,7 @@ Nine tasks, spanning both halves of the assistant's job.
 
 Each task is a dataclass carrying its instruction, the behavior it probes, its
 deterministic criteria, its binary rubric criteria, and a pointer to the fixture
-ground truth the judge is shown. See `adaptyv_evals/task_set.py`.
+ground truth the judge is shown. See `agent_evals/task_set.py`.
 
 ## The evaluation engine
 
@@ -327,7 +327,7 @@ python scripts/run_evals.py [options]
 Each run writes a markdown report and a JSON dump containing every trace with
 its tool arguments and tool outputs. The JSON matters because the agent is
 non-deterministic: a failure that is not captured may not reproduce. Rebuild any
-saved trace with `adaptyv_evals.trace.trace_from_dict` and re-run checks against
+saved trace with `agent_evals.trace.trace_from_dict` and re-run checks against
 it without calling a model.
 
 ## Configuration
@@ -360,10 +360,10 @@ imports, the unit tests run, and the whole mock pipeline works with the
 ## Layout
 
 ```
-adaptyv_evals/
+agent_evals/
   config.py          models, repetitions, paths, all env-overridable
   fixtures.py        the simulated world and its ground truth
-  mock_foundry.py    simulated backend
+  mock_lab.py        simulated backend
   tools.py           tool schemas and dispatch
   system_prompt.py   the agent's system prompt, assembled from blocks
   agent.py           ClaudeAgent and ReplayAgent

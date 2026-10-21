@@ -15,7 +15,7 @@ from pathlib import Path
 # Allow running from a clone without installing the package.
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from adaptyv_evals.run_suite import main  # noqa: E402
+from agent_evals.run_suite import main  # noqa: E402
 
 if __name__ == "__main__":
     raise SystemExit(main())

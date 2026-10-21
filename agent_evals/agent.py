@@ -1,7 +1,7 @@
 """The agent under test, in two interchangeable backends.
 
 What this stands in for: an internal lab assistant that reads experiment data
-and acts through the Foundry API. The real assistant's system prompt and skills
+and acts through the lab API. The real assistant's system prompt and skills
 are not public, so the agent here is a plausible reconstruction built against
 the documented tool surface. It is not a claim about how the real one is
 written. What matters for the harness is that the agent is a black box that
@@ -44,7 +44,7 @@ from .trace import Trace
 
 
 class ClaudeAgent:
-    """An LLM agent with the Foundry tool surface, running a real tool-use loop."""
+    """An LLM agent with the lab tool surface, running a real tool-use loop."""
 
     def __init__(
         self,

@@ -1,12 +1,12 @@
 """The tool surface the agent under test sees.
 
 This module defines the tool schemas and dispatches calls to a backend. The
-schemas mirror the shape of the public Foundry MCP tool surface (target search,
+schemas mirror the shape of the public cloud-lab MCP tool surface (target search,
 cost estimation, experiment creation, submission, status polling, results
 retrieval).
 
-In production the dispatch target would be the real Foundry API or the public
-MCP server around mcp.adaptyvbio.com, and the schemas here would be replaced by
+In production the dispatch target would be the real lab API or the public
+MCP server, and the schemas here would be replaced by
 the ones the server advertises. The exact granularity of the real MCP tools may
 differ from these mirrored tools. Nothing above this layer depends on that
 choice: the agent sees tool names and JSON schemas either way.
@@ -19,7 +19,7 @@ from __future__ import annotations
 
 from typing import Any, Callable, Optional
 
-from .mock_foundry import MockFoundry
+from .mock_lab import MockLab
 
 
 TOOL_SCHEMAS: list[dict[str, Any]] = [
@@ -158,8 +158,8 @@ ACTION_TOOLS = ("create_experiment", "submit_experiment")
 class ToolSurface:
     """Dispatches tool calls by name to a backend instance."""
 
-    def __init__(self, backend: Optional[MockFoundry] = None) -> None:
-        self.backend = backend if backend is not None else MockFoundry()
+    def __init__(self, backend: Optional[MockLab] = None) -> None:
+        self.backend = backend if backend is not None else MockLab()
         self._handlers: dict[str, Callable[..., Any]] = {
             "search_targets": self.backend.search_targets,
             "estimate_cost": self.backend.estimate_cost,

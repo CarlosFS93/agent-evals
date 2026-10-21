@@ -57,7 +57,7 @@ def build_arg_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="run_evals",
         description=(
-            "Run the offline agent evaluation suite against the Foundry tool "
+            "Run the offline agent evaluation suite against the lab tool "
             "surface. Defaults require no API key."
         ),
     )

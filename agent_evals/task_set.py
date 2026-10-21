@@ -6,7 +6,7 @@ trace, the binary rubric criteria for the judge, and a pointer to the fixture
 ground truth the judge should be shown.
 
 The tasks span both halves of the assistant's job: reading experiment data and
-acting through the Foundry API. The reading tasks probe faithfulness (do stated
+acting through the lab API. The reading tasks probe faithfulness (do stated
 binding outcomes match the lab data, is a missing or partial result reported
 honestly). The acting tasks probe spend discipline (is cost estimated before
 work is queued, is a target identifier real, is an ambiguous request treated as

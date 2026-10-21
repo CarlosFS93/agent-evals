@@ -10,13 +10,13 @@ from __future__ import annotations
 
 import unittest
 
-from adaptyv_evals import checks
-from adaptyv_evals.agent import ReplayAgent
-from adaptyv_evals.engine import evaluate_trace
-from adaptyv_evals.guardrail import InlineGuardrail
-from adaptyv_evals.task_set import TASKS, TASKS_BY_ID, get_task
-from adaptyv_evals.tools import ToolSurface
-from adaptyv_evals.trace import Trace, make_trace, trace_from_dict
+from agent_evals import checks
+from agent_evals.agent import ReplayAgent
+from agent_evals.engine import evaluate_trace
+from agent_evals.guardrail import InlineGuardrail
+from agent_evals.task_set import TASKS, TASKS_BY_ID, get_task
+from agent_evals.tools import ToolSurface
+from agent_evals.trace import Trace, make_trace, trace_from_dict
 
 
 def trace_with(calls=None, answer: str = "") -> Trace:

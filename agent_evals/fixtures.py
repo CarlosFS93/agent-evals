@@ -1,7 +1,7 @@
-"""The simulated Foundry world: targets, experiments, and per-sequence results.
+"""The simulated lab world: targets, experiments, and per-sequence results.
 
 This module is the ground truth for the whole harness. In production
-these records would live in Adaptyv's LabOS and be served through the Foundry
+these records would live in the lab's data platform and be served through its
 API. Here they are fixed Python data with known correct answers, so that the
 deterministic checks can compare an agent's behavior against an exact reference.
 

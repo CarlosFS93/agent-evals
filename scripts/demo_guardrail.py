@@ -19,9 +19,9 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from adaptyv_evals.guardrail import InlineGuardrail  # noqa: E402
-from adaptyv_evals.tools import ToolSurface  # noqa: E402
-from adaptyv_evals.trace import Trace  # noqa: E402
+from agent_evals.guardrail import InlineGuardrail  # noqa: E402
+from agent_evals.tools import ToolSurface  # noqa: E402
+from agent_evals.trace import Trace  # noqa: E402
 
 
 def build_trace(task_id: str, calls, final_answer: str) -> Trace:

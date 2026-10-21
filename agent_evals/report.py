@@ -292,7 +292,7 @@ def render_markdown(suite: SuiteResult) -> str:
         "written alongside this report. Each entry starts with a `run_id` of the "
         "form `task_id#repN`. Search the JSON for the run id shown in the Failures "
         "section to jump straight to that repetition, then rebuild it with "
-        "`adaptyv_evals.trace.trace_from_dict` to re-check it without calling a "
+        "`agent_evals.trace.trace_from_dict` to re-check it without calling a "
         "model."
     )
     lines.append("")
