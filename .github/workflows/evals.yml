@@ -33,11 +33,14 @@ jobs:
           path: reports/
           if-no-files-found: ignore
 
-  # Runs the real agent against the real models. Needs a repository secret, so
-  # it is skipped when the secret is not available (forks, or a clone without
-  # credentials configured) rather than failing the build for the wrong reason.
+  # Runs the real agent against the real models. Disabled by default: it only
+  # runs when the repository variable LIVE_EVALS is set to 'true'. Once enabled
+  # it also needs a repository secret, and is skipped when the secret is not
+  # available (forks, or a clone without credentials configured) rather than
+  # failing the build for the wrong reason.
   live:
     name: Offline suite (real agent + judge)
+    if: vars.LIVE_EVALS == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

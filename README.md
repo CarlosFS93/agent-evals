@@ -299,15 +299,17 @@ its logic is covered by the unit tests, and `scripts/demo_guardrail.py` runs it
 on demand from a terminal.
 
 `live` runs the offline suite against the real agent and the judge (`--agent
-claude --judge`). It needs the `ANTHROPIC_API_KEY` repository secret, and is
-skipped cleanly when the secret is absent (forks, or a clone without credentials)
-rather than failing for the wrong reason. This is the job that exercises the
-agent and any change to its prompt or model.
+claude --judge`). This is the job that exercises the agent and any change to its
+prompt or model. It is disabled by default and only runs when the repository
+variable `LIVE_EVALS` is set to `true` (Settings → Secrets and variables →
+Actions → Variables). Once enabled it also needs the `ANTHROPIC_API_KEY`
+repository secret, and is skipped cleanly when the secret is absent (forks, or a
+clone without credentials) rather than failing for the wrong reason.
 
-One consequence is worth stating: a green run with no key configured validates
-the harness, not the agent. For CI to judge a prompt or model change, the `live`
-job has to run, which means the secret has to be set. The workflow is already
-wired for that; it only waits on the secret.
+One consequence is worth stating: a green run with the `live` job disabled
+validates the harness, not the agent. For CI to judge a prompt or model change,
+set `LIVE_EVALS` to `true` and add the secret. The workflow is already wired for
+that; nothing else needs to change.
 
 ## CLI
 
