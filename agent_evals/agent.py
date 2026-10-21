@@ -1,10 +1,7 @@
 """The agent under test, in two interchangeable backends.
 
-What this stands in for: an internal lab assistant that reads experiment data
-and acts through the lab API. The real assistant's system prompt and skills
-are not public, so the agent here is a plausible reconstruction built against
-the documented tool surface. It is not a claim about how the real one is
-written. What matters for the harness is that the agent is a black box that
+What this is: a lab-assistant agent modeled on a public cloud-lab API, which
+reads experiment data and acts through that API. What matters for the harness is that the agent is a black box that
 emits a Trace, so the same evaluation applies to whatever is put behind it.
 
 Two backends ship:

@@ -5,7 +5,7 @@ these records would live in the lab's data platform and be served through its
 API. Here they are fixed Python data with known correct answers, so that the
 deterministic checks can compare an agent's behavior against an exact reference.
 
-Assumptions: the result schema mirrors the documented public fields (kd,
+Assumptions: the result schema uses common binding-kinetics fields (kd,
 kd_units, kon, koff, binding_strength, r_squared, n_replicates, is_control, plus
 identifiers). Real deliveries may include additional fields and raw artifacts
 (sensorgrams, fitted curves) that are not modeled here.
@@ -96,7 +96,7 @@ def search_targets_fixture(
 # ---------------------------------------------------------------------------
 # Experiments and results
 # ---------------------------------------------------------------------------
-# A result item follows the documented per-sequence shape. "binding_strength" of
+# A result item follows a common per-sequence shape. "binding_strength" of
 # "none" together with a null kd marks a non-binder; any other strength marks a
 # binder. This categorical distinction is the exact hallucination reference used
 # by the grounded_binding_claims check.

@@ -1,14 +1,13 @@
 """The tool surface the agent under test sees.
 
 This module defines the tool schemas and dispatches calls to a backend. The
-schemas mirror the shape of the public cloud-lab MCP tool surface (target search,
+schemas follow the shape of a typical cloud-lab tool surface (target search,
 cost estimation, experiment creation, submission, status polling, results
 retrieval).
 
-In production the dispatch target would be the real lab API or the public
-MCP server, and the schemas here would be replaced by
-the ones the server advertises. The exact granularity of the real MCP tools may
-differ from these mirrored tools. Nothing above this layer depends on that
+In production the dispatch target would be a real lab API or an MCP server,
+and the schemas here would be replaced by the ones the server advertises. A
+real server may split its tools at a different granularity. Nothing above this layer depends on that
 choice: the agent sees tool names and JSON schemas either way.
 
 Errors travel back as ordinary result objects so the agent has to read and

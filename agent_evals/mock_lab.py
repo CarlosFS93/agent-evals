@@ -1,16 +1,16 @@
 """In-process stand-in for the lab API backend.
 
-What this simulates: the public experiment lifecycle (search targets,
-estimate cost, create a draft, submit it, poll status, fetch results) as
-documented for a typical public cloud-lab API.
+What this simulates: the experiment lifecycle of a typical public cloud-lab
+API (search targets, estimate cost, create a draft, submit it, poll status,
+fetch results).
 
-What was assumed: request and response shapes are mirrored from the documented
-fields. Pricing is a flat price per sequence multiplied by sequence count and
+What was assumed: request and response shapes follow the fields such an API
+commonly exposes. Pricing is a flat price per sequence multiplied by sequence count and
 replicate count. Submission is instantaneous and moves an experiment to
 "submitted" with results_status "none", because no lab work happens here.
 
 What the production version would be: every method below would be an HTTP
-request to the real lab API (or a call through the public MCP server), with
+request to a real lab API (or a call through an MCP server), with
 authentication, rate limits, retries, and pagination. Here they return
 deterministic fixture data with known ground truth so that evaluation results
 are reproducible and require no credentials.

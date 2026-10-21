@@ -1,4 +1,4 @@
-# protein-agent-evals
+# agent-evals
 
 An evaluation harness for an LLM agent that acts through a cloud-lab protein
 engineering API.
@@ -7,11 +7,10 @@ The agent under test is a lab assistant. It reads experiment data (which
 candidates bound, how tight the binding was, whether results are ready) and it
 acts through the API: it searches the target catalog, estimates cost, creates a
 draft experiment, and submits it to the lab, where submitting queues physical lab
-work and commits real spend. This agent is a stand-in. The real internal
-assistant's prompt and skills are not public, so the one here is a plausible
-reconstruction built against the documented tool surface, and the lab API it
-calls is simulated in process, which is what lets the project run without
-credentials.
+work and commits real spend. It is a lab-assistant agent modeled on a public
+cloud-lab API: its prompt and tools follow the experiment lifecycle such an API
+exposes, and the API it calls is simulated in process, which is what lets the
+project run without credentials.
 
 The harness gives that agent a fixed set of tasks, captures the full trace of
 each run (the tools it called, their arguments, what they returned, and the final
@@ -23,8 +22,8 @@ Everything runs with no API key by default.
 ## Quick start
 
 ```bash
-git clone <this repo>
-cd protein-agent-evals
+git clone https://github.com/CarlosFS93/agent-evals.git
+cd agent-evals
 
 # Unit tests for the deterministic checks. Standard library only.
 python -m unittest discover -s tests -v
@@ -128,7 +127,7 @@ reason about them. Several tasks exist specifically to check that it does.
 
 ## The tool surface
 
-Mirrors the documented experiment lifecycle:
+Mirrors the experiment lifecycle of a typical cloud-lab API:
 
 ```
 create draft -> estimate cost -> submit -> [lab runs] -> results
@@ -386,22 +385,21 @@ tests/
 
 ## Assumptions
 
-The simulation is built from publicly documented behavior. Where the
-documentation stops, the following assumptions were made and are worth stating
-plainly, because a harness is only as good as the world it measures against:
+The simulation models the kind of behavior a public cloud-lab API exposes. The
+following assumptions were made and are worth stating plainly, because a harness
+is only as good as the world it measures against:
 
-- The internal assistant's real system prompt and skills are not public. What the
-  suite scores is the reconstruction in `agent.py`, so its results describe that
-  stand-in, not the internal assistant.
-- It is not publicly confirmed whether internal agents submit experiments or
-  only read data. The task set covers both the read path and the act path.
-- The exact granularity of the real MCP tools may differ from the tools mirrored
-  here. Nothing above the tool layer depends on that choice.
-- Some result-schema fields beyond the public examples may differ. The
-  documented fields are used.
-- Rate limits, auth scopes, and the exact webhook payload are only partially
-  documented. The documented behavior is assumed, and retries, pagination, and
-  webhook verification are not modeled.
+- The agent is the one defined in `agent.py` and `system_prompt.py`. The suite's
+  results describe that agent; pointing the harness at a different one means
+  swapping what sits behind the `Trace` interface.
+- A lab assistant may only read data or may also act on it. The task set covers
+  both the read path and the act path.
+- A real API or MCP server may split its tools at a different granularity than
+  the tools modeled here. Nothing above the tool layer depends on that choice.
+- Real result payloads may carry more fields than the ones modeled. Only the
+  common binding-kinetics fields are used.
+- Rate limits, auth scopes, and webhook payloads are not modeled, and neither
+  are retries, pagination, or webhook verification.
 
 ## Extending to production traffic (not built)
 
