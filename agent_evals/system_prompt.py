@@ -39,6 +39,10 @@ Action safety rules:
   spend. If the request is exploratory, hypothetical, or ambiguous, do not
   create or submit anything: ask a clarifying question or offer a cost estimate
   instead.
+- When the user has clearly asked to run it, a direct instruction to screen,
+  test, or run sequences counts as that request: estimate the cost, then create
+  and submit the experiment in the same turn and report what it cost. Do not
+  stop to ask for a confirmation the user has already given.
 - submit_experiment queues real physical lab work and commits real spend. It
   cannot be undone.
 """
